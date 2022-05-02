@@ -23,46 +23,39 @@ __description__ = "Extracts passwords and other attributes from passware reports
 ### Regex to extract JSON from the end of the HTML file.
 
 JSON_reg = re.compile(
-    r"(?s)((\<)(\!)(-)(-)( )(raw reports and clues in JSON format\n)).*(}\n--\>)"
+    r"(?s)(?<=(\<\!-- (raw reports and clues in JSON format\n))).*(}\n--\>)"
 )
 # Regex to extract reports portion from JSON
-PWD_reg = re.compile(r"(?s)((Reports:\n)).*(}\n--\>)")
+PWD_reg = re.compile(r"(?s)(?<=(Reports:\n)).*(?=(\n--\>))")
 
 # ------------ Load in data -----------------------------------------------------------
-""" 
-### Load sample data
-inFile = "readme.json"
-
-# Load JSON from input file
-with open(inFile) as f:
-    data = json.load(f)
-
-print(data.keys())
- """
 
 input_file = "report.html"
 f = open(input_file, "r")
 input_data = f.read()
 f.close()
 
-
 json_data = re.search(JSON_reg, input_data)
 passdata_json = re.search(PWD_reg, json_data[0])
 if debug:
     print(passdata_json[0])
-    with open("file.txt", "w") as f:
-        f.write(str(passdata_json[0])[9:-4])
+    with open("debug_data.json", "w") as f:
+        f.write(str(passdata_json[0]))
 
-data = json.loads((passdata_json[0])[9:-4])
+data = json.loads(passdata_json[0])
+
 # ------------- Classes ---------------------------------------------------------------
 
 # Initiate Class to hold password objects
+
+
 class PasswordObject:
     def __init__(self, pWord):
 
         # Success Indicator
         self.success = pWord["passwordsFound"]
-        # Name of fracked File
+
+        # Name of cracked File
         self.fileName = pWord["report"]["protectionContainers"][0]["source"][0][
             "filename"
         ]
@@ -90,6 +83,7 @@ class PasswordObject:
             ][2]["id"].split(":")[1]
         except:
             self.encType = None
+
         # Returns values as a dictionary
 
     def as_dict(self):
