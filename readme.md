@@ -9,6 +9,8 @@ Created to assist in password sharing and ingestion of passwords into other tool
 ----
 
 Log
+**5/5/22**
+Regex used to parse data from HTML file as JSON data is in a HTML comments section at the end of the file.
 
 **28/4/2022**
 
