@@ -124,7 +124,7 @@ def processJSON(input_file):
             print(successList)
             print(dedupList)
 
-    # Make a dataframe, just because.
+    # Make a dataframe, just because. Can fix later with csv
     df = pd.DataFrame([x.as_dict() for x in objectList])
     print(df)
     df.to_csv("cracked.csv")
@@ -132,6 +132,8 @@ def processJSON(input_file):
 
 # input_file = "report.html"
 # processJSON(input_file)
+
+# ------- Argument Parser -------------------------------------------------------------
 
 parser = argparse.ArgumentParser(
     description=__description__, epilog="Developed by {}".format(__author__)
