@@ -81,9 +81,9 @@ class PasswordObject:
         }
 
 
-# ------------ Load data --------------------------------------------------------------
+# ----- Functions live here -----------------------------------------------------------
 
-
+#  Load data
 def dataLoad(input_file):
     f = open(input_file, "r")
     input_data = f.read()
@@ -101,7 +101,6 @@ def dataLoad(input_file):
     return data
 
 
-# ----- Functions live here -----------------------------------------------------------
 # Iterate over JSON data and build up class objects
 def processJSON(input_file):
     inputObjectList = dataLoad(input_file)
