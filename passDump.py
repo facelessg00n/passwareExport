@@ -9,19 +9,20 @@ Formatted with Black
 # Import functions
 import argparse
 import json
-from pprint import pprint
+import os
 import pandas as pd
+from pprint import pprint
 import re
+import sys
 
 # ------------ Setup ------------------------------------------------------------------
 
 debug = False
 
 __author__ = "facelessg00n"
-__description__ = "Extracts passwords and other attributes from passware reports. If no input file is specified it will default to looking for a file called report.html, the default report name in the files current working directory"
+__description__ = "Extracts passwords and other attributes from passware reports. Script will look for file called 'report.html' in the current working directory if no input is specified."
 
 ### Regex to extract JSON from the end of the HTML file.
-
 JSON_reg = re.compile(
     r"(?s)(?<=(\<\!-- (raw reports and clues in JSON format\n))).*(}\n--\>)"
 )
@@ -68,8 +69,7 @@ class PasswordObject:
         except:
             self.encType = None
 
-        # Returns values as a dictionary
-
+    # Returns values as a dictionary
     def as_dict(self):
         return {
             "Success": self.success,
@@ -115,6 +115,7 @@ def processJSON(input_file):
     for x in objectList:
         successList.append(x.recoveredPassword)
     dedupList = list(dict.fromkeys(successList))
+
     # Remove 'None' values
     dedupList = list(filter(None, dedupList))
 
@@ -133,14 +134,32 @@ def processJSON(input_file):
 # input_file = "report.html"
 # processJSON(input_file)
 
-
 parser = argparse.ArgumentParser(
     description=__description__, epilog="Developed by {}".format(__author__)
 )
 
-parser.add_argument("-f", "--input_file", help="\nFilename or path for input file\n")
+parser.add_argument(
+    "-f",
+    "--input_file",
+    help="\nFilename or path for input file\n",
+    default="report.html",
+)
 args = parser.parse_args()
 file_path = args.input_file
+
+""" if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(1)
+ """
+
+# Check if the input file exists.
+if not os.path.exists(args.input_file):
+    print(
+        "ERROR: Input file; '{}' does not exist or is not a file".format(
+            args.input_file
+        )
+    )
+    sys.exit(1)
 
 if file_path:
     processJSON(file_path)
