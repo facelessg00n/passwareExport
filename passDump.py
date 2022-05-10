@@ -10,15 +10,18 @@ Formatted with Black
 import argparse
 import json
 import os
+import csv
 
 try:
     import pandas as pd
 
     hasPandas = True
-    print(pd.__version__)
+    print("\nPandas " + str(pd.__version__) + " loaded\n")
 except:
     hasPandas = False
-    print("Pandas is not installed")
+    print("Pandas is not installed \nUsing CSV Writer")
+    import csv
+
     pass
 
 from pprint import pprint
@@ -140,13 +143,41 @@ def processJSON(input_file):
         df = pd.DataFrame([x.as_dict() for x in objectList])
         # drop failed cracks
         df.drop(df[df.Success == 0].index, inplace=True)
-        print(df)
-        print(df.info())
-        print("Summary: \n")
+        print(df.head())
+        # print(df.info())
+        print("\nSummary: \n")
         print(str(len(df["md5"].unique().tolist())) + " unique hash values found.")
         print("Exporting CSV")
         print("\n")
         df.to_csv("cracked.csv")
+
+    # Use CSV module if pandas is not installed
+    else:
+        print("Pandas not detected, using CSV module for output.")
+        with open("crackedFallback.csv", "w") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(
+                [
+                    "Success",
+                    "Protector_format",
+                    "Encryption type",
+                    "File_Name",
+                    "Password",
+                    "md5",
+                ]
+            )
+            for x in objectList:
+                writer.writerow(
+                    [
+                        x.success,
+                        x.protectorFormat,
+                        x.encType,
+                        x.fileName,
+                        x.recoveredPassword,
+                        x.fileHash,
+                    ]
+                )
+            print("Writing complete.")
 
 
 # input_file = "report.html"

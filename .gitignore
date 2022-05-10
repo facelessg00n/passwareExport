@@ -5,3 +5,4 @@ cracked.csv
 fileReader.py
 debug_data.json
 .venv
+crackedFallback.csv
