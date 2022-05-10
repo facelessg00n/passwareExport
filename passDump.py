@@ -10,10 +10,21 @@ Formatted with Black
 import argparse
 import json
 import os
-import pandas as pd
+
+try:
+    import pandas as pd
+
+    hasPandas = True
+    print(pd.__version__)
+except:
+    hasPandas = False
+    print("Pandas is not installed")
+    pass
+
 from pprint import pprint
 import re
 import sys
+
 
 # ------------ Setup ------------------------------------------------------------------
 
@@ -124,10 +135,18 @@ def processJSON(input_file):
             print(successList)
             print(dedupList)
 
-    # Make a dataframe, just because. Can fix later with csv
-    df = pd.DataFrame([x.as_dict() for x in objectList])
-    print(df)
-    df.to_csv("cracked.csv")
+    if hasPandas:
+        # Make a dataframe, just because. Can fix later with csv
+        df = pd.DataFrame([x.as_dict() for x in objectList])
+        # drop failed cracks
+        df.drop(df[df.Success == 0].index, inplace=True)
+        print(df)
+        print(df.info())
+        print("Summary: \n")
+        print(str(len(df["md5"].unique().tolist())) + " unique hash values found.")
+        print("Exporting CSV")
+        print("\n")
+        df.to_csv("cracked.csv")
 
 
 # input_file = "report.html"
